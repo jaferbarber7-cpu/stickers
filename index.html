@@ -1,139 +1,27 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dos Motos Eco Deluxe 2026</title>
+const whatsapp = "573013345472"; // TU NÚMERO YA CORRECTO
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:Arial,sans-serif;background:#f4f4f4}
-header{background:#111;color:white;padding:30px;text-align:center}
+div.querySelector("button").onclick = async (e)=>{
+  e.stopPropagation();
 
-.info{background:white;max-width:1100px;margin:20px auto;padding:20px;border-radius:10px;text-align:center}
+  const snapshot = await get(numRef);
 
-.numeros{
-display:grid;
-grid-template-columns:repeat(auto-fill,minmax(70px,1fr));
-gap:8px;
-max-width:1200px;
-margin:auto;
-padding:20px;
-}
+  if(!snapshot.exists()){
 
-.numero{
-padding:12px;
-border-radius:8px;
-text-align:center;
-color:white;
-font-weight:bold;
-cursor:pointer;
-position:relative;
-}
+    // guardar vendido en Firebase
+    await set(numRef, {
+      estado: "vendido"
+    });
 
-.disponible{background:#28a745}
-.vendido{background:#dc3545;cursor:not-allowed}
+    div.className = "numero vendido";
+    div.innerHTML = `${numero}<br>VENDIDO`;
 
-.btn{
-margin-top:5px;
-display:block;
-font-size:10px;
-background:white;
-color:black;
-border:none;
-padding:3px;
-border-radius:5px;
-cursor:pointer;
-}
-</style>
-</head>
+    // 💬 MENSAJE WHATSAPP
+    const mensaje = `Hola, quiero comprar el número ${numero} de la rifa de las motos.`;
 
-<body>
-
-<header>
-<h1>🏍️ Dos Motos Eco Deluxe 2026 🏍️</h1>
-<p>Selecciona tu número</p>
-</header>
-
-<div class="info">
-<p>Haz clic en “Comprar” y te llevará a WhatsApp</p>
-</div>
-
-<div class="numeros" id="numeros"></div>
-
-<script type="module">
-
-// 🔥 FIREBASE REALTIME DATABASE
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
-
-// 🔥 TU CONFIG (YA CORRECTO)
-const firebaseConfig = {
-  apiKey: "AIzaSyB_W4Rr4kzvx_ndDMKxMc6qKWebP64QUoc",
-  authDomain: "motos-95ec1.firebaseapp.com",
-  projectId: "motos-95ec1",
-  storageBucket: "motos-95ec1.firebasestorage.app",
-  messagingSenderId: "67947541164",
-  appId: "1:67947541164:web:a3ac92d44677c02ab5e509"
+    // 🚀 REDIRECCIÓN A WHATSAPP
+    window.open(
+      `https://wa.me/${whatsapp}?text=${encodeURIComponent(mensaje)}`,
+      "_blank"
+    );
+  }
 };
-
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-
-// WhatsApp
-const whatsapp = "573013345472";
-
-const contenedor = document.getElementById("numeros");
-
-// crear números
-for(let i=0;i<=999;i++){
-
-  let numero = i.toString().padStart(3,"0");
-
-  let div = document.createElement("div");
-  div.className = "numero disponible";
-
-  div.innerHTML = `
-    ${numero}
-    <button class="btn">Comprar</button>
-  `;
-
-  const numRef = ref(db, "numeros/" + numero);
-
-  // verificar si está vendido
-  get(numRef).then((snapshot)=>{
-    if(snapshot.exists()){
-      div.className = "numero vendido";
-      div.innerHTML = `${numero}<br>VENDIDO`;
-    }
-  });
-
-  // comprar
-  div.querySelector("button").onclick = async (e)=>{
-    e.stopPropagation();
-
-    const snapshot = await get(numRef);
-
-    if(!snapshot.exists()){
-
-      // guardar vendido
-      await set(numRef, {
-        estado: "vendido"
-      });
-
-      div.className = "numero vendido";
-      div.innerHTML = `${numero}<br>VENDIDO`;
-
-      // WhatsApp
-      const mensaje = `Hola, quiero comprar el número ${numero} de la rifa.`;
-      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(mensaje)}`,"_blank");
-    }
-  };
-
-  contenedor.appendChild(div);
-}
-
-</script>
-
-</body>
-</html>
