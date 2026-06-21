@@ -1,27 +1,83 @@
-const whatsapp = "573013345472"; // TU NÚMERO YA CORRECTO
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dos Motos Eco Deluxe 2026</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#f4f4f4}
+header{background:#111;color:white;padding:30px;text-align:center}
+.info{background:white;max-width:1100px;margin:20px auto;padding:20px;border-radius:10px;text-align:center}
+.buscador{text-align:center;margin:20px}
+.buscador input{padding:10px;width:220px;border-radius:8px;border:1px solid #ccc}
+.leyenda,.contador{text-align:center;margin:20px}
+.numeros{display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:8px;max-width:1200px;margin:auto;padding:20px}
+.numero{padding:12px;border-radius:8px;text-align:center;color:white;font-weight:bold;cursor:pointer}
+.disponible{background:#28a745}
+.vendido{background:#dc3545;cursor:not-allowed}
+footer{text-align:center;padding:20px;color:#666}
+</style>
+</head>
+<body>
+<header>
+<h1>🏍️ Dos Motos Eco Deluxe 2026 🏍️</h1>
+<p>Premio: 2 Motos Eco Deluxe 2026</p>
+<p>Valor: $20.000 COP por cada 10 números</p>
+</header>
 
-div.querySelector("button").onclick = async (e)=>{
-  e.stopPropagation();
+<div class="info">
+<h2>¡Participa y gana!</h2>
+<p>Selecciona un número disponible y contáctanos por WhatsApp.</p>
+<p>WhatsApp: 301 334 5472</p>
+</div>
 
-  const snapshot = await get(numRef);
+<div class="contador">
+Disponibles: <span id="disponibles"></span>
+</div>
 
-  if(!snapshot.exists()){
+<div class="buscador">
+<input type="text" id="buscar" placeholder="Buscar número">
+</div>
 
-    // guardar vendido en Firebase
-    await set(numRef, {
-      estado: "vendido"
-    });
+<div class="leyenda">🟢 Disponible | 🔴 Vendido</div>
+<div class="numeros" id="numeros"></div>
 
-    div.className = "numero vendido";
-    div.innerHTML = `${numero}<br>VENDIDO`;
+<footer>Dos Motos Eco Deluxe 2026</footer>
 
-    // 💬 MENSAJE WHATSAPP
-    const mensaje = `Hola, quiero comprar el número ${numero} de la rifa de las motos.`;
+<script>
+const whatsapp = "573013345472";
+const vendidos = [];
+const contenedor = document.getElementById("numeros");
+let disponibles = 0;
 
-    // 🚀 REDIRECCIÓN A WHATSAPP
-    window.open(
-      `https://wa.me/${whatsapp}?text=${encodeURIComponent(mensaje)}`,
-      "_blank"
-    );
+for(let i=0;i<=999;i++){
+  let numero = i.toString().padStart(3,"0");
+  let div = document.createElement("div");
+  div.innerText = numero;
+  div.dataset.numero = numero;
+
+  if(vendidos.includes(i)){
+    div.className="numero vendido";
+  } else {
+    disponibles++;
+    div.className="numero disponible";
+    div.onclick=()=>{
+      const mensaje=`Hola, deseo participar en la Dos Motos Eco Deluxe 2026. Quiero reservar el número ${numero}.`;
+      window.open(`https://wa.me/${whatsapp}?text=${encodeURIComponent(mensaje)}`,"_blank");
+    };
   }
-};
+  contenedor.appendChild(div);
+}
+
+document.getElementById("disponibles").innerText = disponibles;
+
+document.getElementById("buscar").addEventListener("keyup",function(){
+ const valor=this.value;
+ document.querySelectorAll(".numero").forEach(n=>{
+   n.style.display=n.dataset.numero.includes(valor)?"block":"none";
+ });
+});
+</script>
+</body>
+</html>
