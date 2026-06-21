@@ -24,11 +24,6 @@ header h1{
   font-size:26px;
 }
 
-header p{
-  margin-top:10px;
-  color:#ccc;
-}
-
 .info{
   text-align:center;
   padding:15px;
@@ -53,6 +48,10 @@ header p{
   font-weight:bold;
 }
 
+.vendido{
+  background:#dc3545;
+}
+
 .btn{
   display:block;
   margin-top:5px;
@@ -75,17 +74,38 @@ header p{
 </header>
 
 <div class="info">
-<p>Selecciona tu número y paga por Nequi o consulta por WhatsApp</p>
 <p><strong>Nequi: 3013345472</strong></p>
+<p>Selecciona un número y compra por WhatsApp</p>
 </div>
 
 <div class="numeros" id="numeros"></div>
 
-<script>
+<script type="module">
+
+// 🔥 FIREBASE REALTIME DATABASE
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-database.js";
+
+// 🔥 TU CONFIG
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_AUTH_DOMAIN",
+  projectId: "TU_PROJECT_ID",
+  storageBucket: "TU_STORAGE_BUCKET",
+  messagingSenderId: "TU_SENDER_ID",
+  appId: "TU_APP_ID"
+};
+
+// INIT
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// WhatsApp
 const whatsapp = "573013345472";
+
 const contenedor = document.getElementById("numeros");
 
-// generar números
+// crear números
 for(let i=0;i<=999;i++){
 
   let numero = i.toString().padStart(3,"0");
@@ -98,16 +118,35 @@ for(let i=0;i<=999;i++){
     <button class="btn">Comprar</button>
   `;
 
+  const numRef = ref(db, "numeros/" + numero);
+
+  // 🔴 ESCUCHAR EN TIEMPO REAL
+  onValue(numRef, (snapshot) => {
+    if(snapshot.exists()){
+      div.classList.add("vendido");
+      div.innerHTML = `${numero}<br>VENDIDO`;
+    }
+  });
+
+  // 🟢 COMPRAR
   div.querySelector("button").addEventListener("click", ()=>{
 
-    const mensaje = `Hola, quiero comprar el número ${numero} de la rifa. Deseo pagar por Nequi (3013345472).`;
+    const mensaje = `Hola, quiero comprar el número ${numero} de la rifa. Pago por Nequi: 3013345472`;
 
+    // guardar vendido en Firebase
+    set(numRef, {
+      estado: "vendido"
+    });
+
+    // abrir WhatsApp
     window.location.href =
       `https://wa.me/${whatsapp}?text=${encodeURIComponent(mensaje)}`;
+
   });
 
   contenedor.appendChild(div);
 }
+
 </script>
 
 </body>
